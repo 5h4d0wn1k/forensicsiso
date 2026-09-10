@@ -1,4 +1,5 @@
 # forensicsiso
+![tests](https://github.com/5h4d0wn1k/forensicsiso/actions/workflows/ci.yml/badge.svg) ![MIT](https://img.shields.io/badge/license-MIT-blue.svg)
 
 Full DFIR workstation - disk/memory/log/pcap/registry/browser/email parsing, timeline, cross-artifact correlation.
 
@@ -138,3 +139,6 @@ Expected proof: command + exit code + the JSON report it produced, archived unde
 Real measurements recorded in `METRICS.md` after each feature lands (tests, demo
 timings, parser pass/fail counts, coverage of the hash chain). Tracked: total tests,
 module pass rate, demo exit status, fixture hashes, custody manifest validity.
+
+## Contributing
+See [CONTRIBUTING.md](CONTRIBUTING.md).
