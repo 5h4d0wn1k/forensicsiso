@@ -9,3 +9,5 @@ dist/
 *.egg-info/
 .venv/
 .env
+forensicsiso/_fixtures/
+forensicsiso/_output/

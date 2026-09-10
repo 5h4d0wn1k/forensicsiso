@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta:__legacy__"
+
+[project]
+name = "forensicsiso"
+version = "1.0.0"
+description = "Full DFIR workstation — disk/memory/log/pcap/registry/browser/email parsing, timeline, cross-artifact correlation"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.9"
+authors = [{name = "5h4d0wn1k", email = "5h4d0wn1k@users.noreply.github.com"}]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Security",
+]
+
+[project.scripts]
+forensicsiso = "forensicsiso.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["forensicsiso*"]
+
+[tool.setuptools.package-data]
+forensicsiso = ["fixtures/*.py"]
