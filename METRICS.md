@@ -36,4 +36,4 @@ Per-module proof (parsers run over regenerable fixtures, hashed + custody-tracke
 - **Registry Run key + SAM-like Users:** Run/Updater + Run/Launcher + (Default); Users: alice, bob
 - **Browser planted URL + timestamp:** `https://alice@example.com/mail/` @ 2026-09-09T11:00:00+00:00
 - **alice@example.com across 3+ sources:** yes — 6 sources
-- **Hash chain verification:** passes
+- **Hash chain verification:** passes (`forensicsiso hashes --verify` → 9/9 custody manifests valid, chain_valid True)
