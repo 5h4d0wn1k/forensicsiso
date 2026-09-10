@@ -362,18 +362,46 @@ def _print_correlate(r):
 
 def cmd_hashes(args):
     from forensicsiso.custody import CustodyManifest
+    from forensicsiso.hashing import sha256_file
     _ensure_dirs()
-    # Verify all fixture files
     fixtures = sorted(FIXTURE_DIR.glob("*"))
+    all_ok = True
+    report = {}
+
+    if getattr(args, "verify", False):
+        report["verification"] = {}
+        manifests = sorted(OUT_DIR.glob("*_custody.json"))
+        checked = 0
+        for m in manifests:
+            ok = CustodyManifest.verify(str(m))
+            report["verification"][m.name] = ok
+            checked += 1
+            all_ok = all_ok and ok
+        report["verification"]["summary"] = {
+            "manifests_checked": checked,
+            "manifests_valid": sum(1 for v in report["verification"].values()
+                                   if isinstance(v, bool) and v),
+            "chain_valid": all_ok,
+        }
+        fixtures_ok = True
+        for f in fixtures:
+            if f.is_file() and not str(f).endswith((".pid", ".marker")):
+                h = sha256_file(str(f))
+                if len(h) != 64:
+                    fixtures_ok = False
+        report["verification"]["fixture_hashes_valid"] = fixtures_ok
+        all_ok = all_ok and fixtures_ok
+        print(json.dumps(report, indent=2))
+        return 0 if all_ok else 1
+
     manifest_path = args.manifest if hasattr(args, 'manifest') and args.manifest else str(OUT_DIR / "custody_manifest.json")
     if os.path.exists(manifest_path):
-        report = {"manifest": CustodyManifest.verify(manifest_path)}
+        report["manifest"] = CustodyManifest.verify(manifest_path)
     else:
-        report = {"manifest": False}
+        report["manifest"] = False
     fixture_hashes = []
     for f in fixtures:
         if f.is_file() and not str(f).endswith(('.pid', '.marker')):
-            from forensicsiso.hashing import sha256_file
             fixture_hashes.append({"path": str(f), "sha256": sha256_file(str(f))})
     report["fixtures"] = fixture_hashes
     print(json.dumps(report, indent=2))
@@ -554,6 +582,9 @@ def main():
     ]:
         s = sub.add_parser(name, help=help_text, parents=[common])
         s.set_defaults(handler=cmds[name])
+        if name == "hashes":
+            s.add_argument("--verify", action="store_true",
+                           help="Verify custody manifests + fixture hash chain")
 
     args = p.parse_args()
 

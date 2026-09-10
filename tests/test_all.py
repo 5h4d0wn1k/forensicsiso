@@ -76,24 +76,24 @@ class TestHashing(unittest.TestCase):
 class TestCustody(unittest.TestCase):
     def test_manifest_roundtrip(self):
         m = CustodyManifest()
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".txt") as f:
-            f.write(b"evidence data")
-            path = f.name
-        try:
+        with tempfile.TemporaryDirectory() as tmp:
+            with tempfile.NamedTemporaryFile(delete=False, dir=tmp, suffix=".txt") as f:
+                f.write(b"evidence data")
+                path = f.name
             m.add_file(path, "test_file")
             m.add_json_output("test_output", {"result": "ok"})
-            out = _output("test_custody.json")
+            out = os.path.join(tmp, "test_custody.json")
             m.save(out)
             self.assertTrue(os.path.exists(out))
             self.assertTrue(verify_manifest(out))
-        finally:
             os.unlink(path)
 
     def test_manifest_verify_invalid(self):
-        out = _output("invalid_custody.json")
-        with open(out, "w") as f:
-            json.dump({"entries": [], "manifest_hash": "bad"}, f)
-        self.assertFalse(verify_manifest(out))
+        with tempfile.TemporaryDirectory() as tmp:
+            out = os.path.join(tmp, "invalid_custody.json")
+            with open(out, "w") as f:
+                json.dump({"entries": [], "manifest_hash": "bad"}, f)
+            self.assertFalse(verify_manifest(out))
 
 
 # ── Disk tests ──
